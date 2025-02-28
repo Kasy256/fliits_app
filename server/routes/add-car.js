@@ -23,8 +23,6 @@ router.post('/add-car', upload.fields([
   { name: 'frontInterior' },
   { name: 'backInterior' },
 ]), async (req, res) => {
-  console.log("inside");
-  
   try {
     const {
       model,
@@ -44,9 +42,15 @@ router.post('/add-car', upload.fields([
       renterConditions,
       goals,
       additionalInfo,
+      dailyRate,
+      weeklyRate,
+      monthlyRate,
+      securityDeposit,
+      extraMileageFee,
+      lateReturnFee,
+      cleaningFee,
     } = req.body;
-console.log("res",req.body);
-
+console.log("rebody",req.body)
     // Check required fields
     if (!model || !year || !licensePlate || !country || !city || !seats || !fuelType || !transmission) {
       return res.status(400).json({ error: 'Required fields are missing' });
@@ -68,13 +72,20 @@ console.log("res",req.body);
       fuelType,
       transmission,
       features: features?.split(',') || [],
+      dailyRate,
+      weeklyRate,
+      monthlyRate,
+      securityDeposit,
+      extraMileageFee,
+      lateReturnFee,
+      cleaningFee,
       carPhotos: {
-        frontView: req.files?.frontView?.[0]?.filename || '',
-        rearView: req.files?.rearView?.[0]?.filename || '',
-        leftSideView: req.files?.leftSideView?.[0]?.filename || '',
-        rightSideView: req.files?.rightSideView?.[0]?.filename || '',
-        frontInterior: req.files?.frontInterior?.[0]?.filename || '',
-        backInterior: req.files?.backInterior?.[0]?.filename || '',
+        frontView: req.files?.frontView ? req.files.frontView[0].path : '',
+        rearView: req.files?.rearView ? req.files.rearView[0].path : '',
+        leftSideView: req.files?.leftSideView ? req.files.leftSideView[0].path : '',
+        rightSideView: req.files?.rightSideView ? req.files.rightSideView[0].path : '',
+        frontInterior: req.files?.frontInterior ? req.files.frontInterior[0].path : '',
+        backInterior: req.files?.backInterior ? req.files.backInterior[0].path : '',
       },
       renterConditions,
       goals,
@@ -82,12 +93,10 @@ console.log("res",req.body);
     });
 
     // Save the car to the database
+    await newCar.save();
+console.log(newCar);
 
-// Modify the save and response code
-const savedCar = await newCar.save();
-const carObject = savedCar.toObject();
-console.log(carObject);
-    return res.status(201).json({ message: 'Car added successfully!', car: carObject });
+    return res.status(201).json({ message: 'Car added successfully!', car: newCar });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Something went wrong, please try again.' });
