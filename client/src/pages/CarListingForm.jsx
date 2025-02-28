@@ -739,11 +739,11 @@ const handleSubmit = async (e) => {
       }
 
       // Send form data to MongoDB API
-      const response = await fetch('http://localhost:5000/api/add-car', {
+      const response = await fetch(`${import.meta.env.VITE_SERVER_BASE_URL}/api/add-car`, {
         method: 'POST',
         body: formDataToSend,
       });
-
+console.log("resp",response)
       if (!response.ok) {
         throw new Error('Failed to submit form data');
       }
