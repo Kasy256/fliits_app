@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { FaMedal, FaGasPump, FaCouch, FaStar, FaCogs, FaCarSide, FaMapMarkerAlt, FaPlay, FaSnowflake, FaBatteryFull, FaCheck } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
+import { FaMedal, FaGasPump, FaCouch, FaStar, FaCogs, FaCarSide, 
+         FaMapMarkerAlt, FaPlay, FaSnowflake, FaBatteryFull, FaCheck } from 'react-icons/fa';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../styles/CarInfoPage.css';
 import { auth } from '../firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 
-function CarInfo({ items }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const CarInfoPage = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const car = location.state?.car;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -24,89 +27,172 @@ function CarInfo({ items }) {
     }
   };
 
+  if (!car) return <div className="loading">Loading car details...</div>;
+
   return (
-    <div>
+    <div className="car-info-container">
+      {/* Image Section */}
       <div className="car-pics">
         <div className="main-pic-section">
-          <img src='/benz.jfif' alt='car pic' className="Main-pic" />
+          <img 
+            src={`${import.meta.env.VITE_SERVER_BASE_URL}/${car.carPhotos?.frontView}`} 
+            alt={`${car.model} front view`} 
+            className="main-pic"
+          />
         </div>
         <div className="more-pics">
-          <img src='/benz side view.webp' alt='car pic' className="sub-pics" />
-          <img src='/benz-interior.jpg' alt='car pic' className="sub-pics" />
+          <img 
+            src={`${import.meta.env.VITE_SERVER_BASE_URL}/${car.carPhotos?.sideView}`} 
+            alt={`${car.model} side view`} 
+            className="sub-pic" 
+          />
+          <img 
+            src={`${import.meta.env.VITE_SERVER_BASE_URL}/${car.carPhotos?.interiorView}`} 
+            alt={`${car.model} interior`} 
+            className="sub-pic" 
+          />
         </div>
       </div>
 
-      <div className="car-info-section">
+      {/* Details Section */}
+      <div className="details-container">
+        {/* Car Profile */}
         <div className="car-profile">
-          <h4 className='car-model'>{items.name}</h4>
-          <div className="key-features">
-            <h5 className='feature'>{items.rating} <FaStar className='icons' /></h5>
-            <h5 className='feature'><FaMedal className='icons' /> {items.trip} Trips</h5>
-            <h5 className='feature'><FaCouch className='icons' /> {items.seats} Seats</h5>
-            <h5 className='feature'><FaGasPump className='icons' /> {items.fuel}</h5>
+          <h2 className="car-title">{car.model} ({car.year})</h2>
+          
+          <div className="key-specs">
+            <div className="spec-item">
+              <FaStar className="spec-icon" />
+              <span>5.0 (25 reviews)</span>
+            </div>
+            <div className="spec-item">
+              <FaCouch className="spec-icon" />
+              <span>{car.seats} Seats</span>
+            </div>
+            <div className="spec-item">
+              <FaGasPump className="spec-icon" />
+              <span>{car.fuelType}</span>
+            </div>
+            <div className="spec-item">
+              <FaCogs className="spec-icon" />
+              <span>{car.transmission}</span>
+            </div>
           </div>
-          <div className="host-profile">
-            <div className="host">
-              <img src='/team2.jpg' className='profile-pic' alt='profile picture' />
-              <div className="host-name">
-                <h4 className='names'>{items.host_name} <FaMedal /></h4>
-                <p className='host-year'>Host since {items.join_year}</p>
+
+          {/* Host Info */}
+          <div className="host-info">
+            <img src="/default-host.jpg" alt="Host" className="host-photo" />
+            <div className="host-details">
+              <h3 className="host-name">
+                {car.host?.name || 'Professional Host'}
+                <FaMedal className="host-badge" />
+              </h3>
+              <p className="host-since">Host since {car.host?.since || '2020'}</p>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="description-section">
+            <h3 className="section-title">Description</h3>
+            <p className="car-description">
+              {car.description || 'Premium vehicle with excellent maintenance and care'}
+            </p>
+          </div>
+
+          {/* Features */}
+          <div className="features-section">
+            <h3 className="section-title">Features</h3>
+            <div className="features-grid">
+              <div className="feature-item">
+                <FaCarSide className="feature-icon" />
+                <span>All-Wheel Drive</span>
+              </div>
+              <div className="feature-item">
+                <FaSnowflake className="feature-icon" />
+                <span>Air Conditioning</span>
+              </div>
+              <div className="feature-item">
+                <FaPlay className="feature-icon" />
+                <span>Apple CarPlay</span>
+              </div>
+              <div className="feature-item">
+                <FaBatteryFull className="feature-icon" />
+                <span>Wireless Charging</span>
               </div>
             </div>
-            <div className="ownership">
-              <p>{items.ownership}</p>
+          </div>
+
+          {/* Requirements */}
+          <div className="requirements-section">
+            <h3 className="section-title">Requirements</h3>
+            <div className="requirements-list">
+              <div className="requirement-item">
+                <FaCheck className="requirement-icon" />
+                <span>Minimum 25 years old</span>
+              </div>
+              <div className="requirement-item">
+                <FaCheck className="requirement-icon" />
+                <span>Valid driver's license</span>
+              </div>
             </div>
-          </div>
-
-          <p className='description-heading'>Description</p>
-          <p className='car-description'>{items.description}</p>
-
-          <p className='description-heading'>More Features</p>
-          <div className="more-features">
-            <p className='feature'><FaCogs className='icons' /> Automatic</p>
-            <p className='feature'><FaCarSide className='icons' /> All-Wheel drive</p>
-            <p className='feature'><FaMapMarkerAlt className='icons' /> GPS</p>
-            <p className='feature'><FaPlay className='icons' /> Apple CarPlay</p>
-            <p className='feature'><FaSnowflake className='icons' /> Air Conditioning</p>
-            <p className='feature'><FaBatteryFull className='icons' /> Wireless Charging</p>
-          </div>
-          <p className='description-heading'>Conditions</p>
-          <div className="conditions">
-            <p className='feature'><FaCheck className='icons' /> 25 years old minimum</p>
-            <p className='feature'><FaCheck className='icons' /> Valid Driving Licence</p>
           </div>
         </div>
 
-        <div className="car-pricing">
-          <div className="total-price">
-            <p className='price'>${items.total_price}</p>
-            <p className='booked-days'>{items.total_days} Days, {items.total_time} Min</p><br />
-            <button onClick={handleBookClick} className='booking-button'>Book</button>
-          </div>
-
-          <div className="booking-date-time">
-            <p className='from-to-date'>From</p>
-            <div className="date-time-input">
-              <input type='date' className='book-date-time' />
-              <input className='book-date-time' type='time' />
+        {/* Booking Widget */}
+        <div className="booking-widget">
+          <div className="pricing-box">
+            <div className="price-header">
+              <h3 className="daily-price">${car.dailyRate}/day</h3>
+              <div className="rating">
+                <FaStar className="star-icon" />
+                <span>5.0 (25)</span>
+              </div>
             </div>
-            <p className='from-to-date'>To</p>
-            <div className="date-time-input">
-              <input type='date' className='book-date-time' />
-              <input className='book-date-time' type='time' />
+
+            {/* Date Pickers */}
+            <div className="date-selectors">
+              <div className="date-group">
+                <label>Pick-up</label>
+                <div className="datetime-inputs">
+                  <input type="date" className="date-input" />
+                  <input type="time" className="time-input" />
+                </div>
+              </div>
+              <div className="date-group">
+                <label>Drop-off</label>
+                <div className="datetime-inputs">
+                  <input type="date" className="date-input" />
+                  <input type="time" className="time-input" />
+                </div>
+              </div>
             </div>
-          </div>
 
-          <p className='booking-location'>Pickup & return Location</p>
-          <input className='booked-location' type='text' />
+            {/* Location */}
+            <div className="location-section">
+              <label>Pickup Location</label>
+              <input
+                type="text"
+                className="location-input"
+                value={`${car.city}, ${car.country}`}
+                readOnly
+              />
+            </div>
 
-          <div className="inquires-section">
-            <button className='inquires-button'>Inquires</button>
+            <button 
+              className="book-button"
+              onClick={handleBookClick}
+            >
+              Continue to Book
+            </button>
+
+            <div className="support-section">
+              <button className="inquiry-button">Ask Host a Question</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
-export default CarInfo;
+export default CarInfoPage;

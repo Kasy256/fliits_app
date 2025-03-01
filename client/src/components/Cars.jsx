@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import '../styles/Hero.css';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { FaHeart, FaMapMarkerAlt } from 'react-icons/fa';
+import '../styles/CarCard.css';
+
 const Cars = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [cars, setCars] = useState([]);
+  const [iconColor, setIconColor] = useState('black');
 
   useEffect(() => {
     if (location.state?.cars) {
@@ -11,76 +15,63 @@ const Cars = () => {
     }
   }, [location.state]);
 
+  const handleClick = (e) => {
+    e.stopPropagation(); 
+    setIconColor(iconColor === 'black' ? 'gold' : 'black');
+  };
+
+  const handleCarInfo = (car) => {
+    navigate('/CarInfoPage', { state: { car } });
+  };
+
   return (
     <div className="cars-container">
       <h1>Search Results</h1>
-      {cars.length > 0 ? (
-        <ul className="cars-list">
-          {cars.map((car) => (
-            <li key={car._id} className="car-item">
-              <h2>{car.model} ({car.year})</h2>
-              <p><strong>Location:</strong> {car.city}, {car.country}</p>
-              <p><strong>Type:</strong> {car.type}</p>
-              <p><strong>Color:</strong> {car.color}</p>
-              <p><strong>Seats:</strong> {car.seats}</p>
-              <p><strong>Fuel Type:</strong> {car.fuelType}</p>
-              <p><strong>Transmission:</strong> {car.transmission}</p>
-              <p><strong>Daily Rate:</strong> ${car.dailyRate}</p>
-              <p><strong>Weekly Rate:</strong> ${car.weeklyRate}</p>
-              <p><strong>Monthly Rate:</strong> ${car.monthlyRate}</p>
-              <p><strong>Security Deposit:</strong> ${car.securityDeposit}</p>
-              <p><strong>Extra Mileage Fee:</strong> ${car.extraMileageFee}/mile</p>
-              <p><strong>Late Return Fee:</strong> ${car.lateReturnFee}/hour</p>
-              <p><strong>Cleaning Fee:</strong> ${car.cleaningFee}</p>
-              <p><strong>Description:</strong> {car.carDescription}</p>
-              <p><strong>Renter Conditions:</strong> {car.renterConditions}</p>
-              <p><strong>Goals:</strong> {car.goals}</p>
-              <p><strong>Additional Info:</strong> {car.additionalInfo}</p>
-              <div className="car-photos">
-                <h3>Photos:</h3>
-                {car.carPhotos?.frontView && (
-                  <img
-                    src={`${import.meta.env.VITE_SERVER_BASE_URL}/${car.carPhotos.frontView}`}
-                    alt="Front View"
+      <div className="cars-grid">
+        {cars.length > 0 ? (
+          cars.map((car) => (
+            <div 
+              className="Card-container" 
+              key={car._id} 
+              onClick={() => handleCarInfo(car)}
+            >
+              {car.carPhotos?.frontView && (
+                <img 
+                  src={`${import.meta.env.VITE_SERVER_BASE_URL}/${car.carPhotos.frontView}`} 
+                  alt="Car" 
+                  className="car-img"
+                />
+              )}
+              
+              <div className="car-info">
+                <div className="car-header">
+                  <h4>{car.model} ({car.year})</h4>
+                  <FaHeart 
+                    style={{ color: iconColor, cursor: 'pointer' }} 
+                    onClick={handleClick}
                   />
-                )}
-                {car.carPhotos?.rearView && (
-                  <img
-                    src={`${import.meta.env.VITE_SERVER_BASE_URL}/${car.carPhotos.rearView}`}
-                    alt="Rear View"
-                  />
-                )}
-                {car.carPhotos?.leftSideView && (
-                  <img
-                    src={`${import.meta.env.VITE_SERVER_BASE_URL}/${car.carPhotos.leftSideView}`}
-                    alt="Left Side View"
-                  />
-                )}
-                {car.carPhotos?.rightSideView && (
-                  <img
-                    src={`${import.meta.env.VITE_SERVER_BASE_URL}/${car.carPhotos.rightSideView}`}
-                    alt="Right Side View"
-                  />
-                )}
-                {car.carPhotos?.frontInterior && (
-                  <img
-                    src={`${import.meta.env.VITE_SERVER_BASE_URL}/${car.carPhotos.frontInterior}`}
-                    alt="Front Interior"
-                  />
-                )}
-                {car.carPhotos?.backInterior && (
-                  <img
-                    src={`${import.meta.env.VITE_SERVER_BASE_URL}/${car.carPhotos.backInterior}`}
-                    alt="Back Interior"
-                  />
-                )}
+                </div>
+
+                <div className="car-details">
+                  <p className="car-location">
+                    <FaMapMarkerAlt /> {car.city}, {car.country}
+                  </p>
+                  <p className="car-price">${car.dailyRate}/day</p>
+                </div>
+
+                <div className="car-specs">
+                  <span>{car.type}</span>
+                  <span>{car.seats} Seats</span>
+                  <span>{car.fuelType}</span>
+                  <span>{car.transmission}</span>
+                </div>
               </div>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No cars found.</p>
-      )}
+            </div>
+          ))
+        ) : (
+          <p className="no-cars">No cars found matching your criteria</p>
+        )}
+      </div>
     </div>
   );
 };

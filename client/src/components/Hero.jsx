@@ -135,7 +135,7 @@ const Hero = () => {
           <div className="search-container">
             <input
               type="text"
-              placeholder="Search cars by model, city, or features..."
+              placeholder="Search cars by model, city, or Country"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="car-search-input"
