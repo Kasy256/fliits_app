@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import addCarRoute from './routes/add-car.js'; 
 import searchCar from './routes/search-car.js'; 
+import mainSearchCar from './routes/mainSearch.js'; 
 import path from 'path';
 import { fileURLToPath } from 'url';
 // import profileRoute from './routes/profile.js'; 
@@ -35,6 +36,7 @@ app.use('/api', addCarRoute);
 
 // Use the search route
 app.use('/api', searchCar);
+app.use('/api/mainSearch', mainSearchCar);
 
 // Connect to MongoDB
 mongoose

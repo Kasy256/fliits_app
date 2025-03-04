@@ -13,10 +13,40 @@ const Hero = () => {
   const [activeTab, setActiveTab] = useState('rent');
   const navigate = useNavigate();
 
-  const handleBookingSubmit = (e) => {
+  const handleBookingSubmit = async (e) => {
     e.preventDefault();
-    const searchParams = { location, startDate, endDate, startTime, endTime };
-    navigate('/AfterSearch', { state: { searchParams } });
+    
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SERVER_BASE_URL}/api/mainsearch`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          destination: location,
+          startDate,
+          startTime,
+          endDate,
+          endTime
+        })
+      });
+      console.log("099",response)
+      if (!response.ok) {
+        throw new Error('Search failed');
+      }
+  
+      const availableVehicles = await response.json();
+      console.log("availableVehicles",availableVehicles)
+      navigate('/Cars', { 
+        state: { 
+          cars: availableVehicles,
+          searchParams: { location, startDate, endDate, startTime, endTime }
+        }
+      });
+    } catch (error) {
+      console.error('Search error:', error);
+      // Add error state or notification here
+    }
   };
 
   const handleCarSearch = async (e) => {
