@@ -4,6 +4,7 @@ import Car from '../models/Car.js';
 
 router.post('/', async (req, res) => {
   const { destination, startDate, startTime, endDate, endTime } = req.body;
+console.log(req.body);
 
   try {
     // Validate required fields
@@ -42,7 +43,7 @@ router.post('/', async (req, res) => {
       try {
         const availableDays = car.availabilityDays.map(Number);
         const availableHours = car.availabilityHours.map(Number);
-        // console.log("avail",availableDays,availableHours)
+        console.log("avail",availableDays,availableHours)
         console.log("isCarAvailable",isCarAvailable(availableDays,availableHours,searchStart,searchEnd))
         return isCarAvailable(availableDays, availableHours, searchStart, searchEnd);
         
@@ -60,47 +61,51 @@ console.log("availableCars",availableCars)
   }
 });
 
+
 function isCarAvailable(availableDays, availableHours, searchStart, searchEnd) {
-  // Calculate total days of the search period
+
+
+  // Calculate total rental days
   const totalDays = calculateTotalDays(searchStart, searchEnd);
-  console.log("totalDays",totalDays)
-  // Get the car's maximum allowed days (using max of availableDays array)
-// console.log("check days",totalDays > availableDays)
+  console.log("Total days needed:", totalDays, "Max allowed:", availableDays);
+  
+  // Check day availability
+  if (totalDays > availableDays) return false;
 
-  if (totalDays >availableDays) return false;
+  // Calculate hours needed per day
+  const hoursPerDay = getMaxHoursPerDay(searchStart, searchEnd);
+   console.log(hoursPerDay)
+  const maxNeededHours = Math.min(...hoursPerDay);
+  console.log("Max hours needed:", maxNeededHours, "Max allowed:", availableHours);
 
-  // Calculate the maximum hours required on any day during the search
-  const maxHoursPerDay = getMaxHoursPerDay(searchStart, searchEnd);
-  console.log("carMaxHours",maxHoursPerDay)
-  // Get the car's maximum allowed daily hours (using max of availableHours array)
-  // console.log("check hours",maxHoursPerDay > availableHours)
-  if (maxHoursPerDay > availableHours) return false;
-
+  // Check hourly availability
+  if (maxNeededHours > availableHours) return false;
 
   return true;
 }
-  function getMaxHoursPerDay(start, end) {
-    const hoursPerDay = [];
-    const current = new Date(start);
+
+function getMaxHoursPerDay(start, end) {
+  const hoursPerDay = [];
+  const current = new Date(start);
+
+  while (current <= end) {
+    const dayStart = new Date(current);
+    dayStart.setUTCHours(7, 0, 0, 0);
+    const dayEnd = new Date(current);
+    dayEnd.setUTCHours(23, 59, 59, 999);
+
+    const overlapStart = new Date(Math.max(start, dayStart));
+    const overlapEnd = new Date(Math.min(end, dayEnd));
+
+    const hours = (overlapEnd - overlapStart) / 3600000;
+    hoursPerDay.push(hours);
     
-    while (current <= end) {
-      const dayStart = new Date(current);
-      dayStart.setUTCHours(0, 0, 0, 0);
-      const dayEnd = new Date(current);
-      dayEnd.setUTCHours(23, 59, 59, 999);
-  
-      const overlapStart = new Date(Math.max(start, dayStart));
-      const overlapEnd = new Date(Math.min(end, dayEnd));
-  
-      const hours = (overlapEnd - overlapStart) / 3600000;
-      hoursPerDay.push(hours);
-      
-      current.setDate(current.getDate() + 1);
-      current.setUTCHours(0, 0, 0, 0);
-    }
-  
-    return hoursPerDay;
+    current.setDate(current.getDate() + 1);
+    current.setUTCHours(0, 0, 0, 0);
   }
+
+  return hoursPerDay;
+}
 function calculateTotalDays(start, end) {
   const diffMs = end - start;
   return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
