@@ -4,7 +4,7 @@ import '../styles/PaymentInfo.css';
 import BookingSummary from '../components/BookingSummary';
 import PriceDetail from '../components/PriceDetail';
 import TermsAndConditions from '../components/T&C';
-import RentalDetail from '../components/RetanlDetail';
+import RentalDetail from '../components/RentalDetail';
 import PaymentMethod from '../components/PaymentMethod';
 import CancellationPolicy from './CancellationPolicy';
 
