@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/FeedbackForm.css';
+import '../styles/Feedbackform.css';
 import emailjs from 'emailjs-com'; 
 import {useNavigate} from 'react-router-dom';
 
