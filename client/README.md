@@ -99,7 +99,7 @@ npm run dev
 For the **backend**:
 
 ```bash
-node Server.js
+node server.js
 ```
 
 ### 6. Access the local server
