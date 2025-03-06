@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import Hero from '../components/Hero';
 import BookCarStyle from '../components/BookYourStyle';
 import { Link } from 'react-router-dom';
-import CarImage from '../assets/images/Share.webp'
+import CarImage from '../assets/images/share.webp'
 import FeedbackButton from '../components/FeedbackButton';
 
 const Home = () => {
