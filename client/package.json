@@ -31,9 +31,12 @@
     "select": "^1.1.2"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.0",
     "@types/dotenv": "^8.2.3",
     "@vitejs/plugin-react": "^4.3.3",
     "nodemon": "^3.1.7",
+    "rollup-plugin-postcss": "^4.0.2",
     "vite": "^4.5.5"
   }
 }
