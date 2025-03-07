@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/cars', async (req, res) => {
   try {
     const { search } = req.query; // Get the search query from the request
-console.log("inside search",req.query)
+// console.log("inside search",req.query)
     let query = {};
     if (search) {
       // Use a regex to search for cars that match the search term in the model, city, or country
@@ -21,7 +21,7 @@ console.log("inside search",req.query)
     }
 
     const cars = await Car.find(query); // Fetch cars based on the query
-    console.log("data sent from s",cars)
+    // console.log("data sent from s",cars)
     res.status(200).json(cars);
   } catch (err) {
     console.error(err);
