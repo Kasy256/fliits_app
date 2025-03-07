@@ -4,7 +4,7 @@ import Car from "../models/Car.js";
 
 router.post("/", async (req, res) => {
   const { destination, startDate, startTime, endDate, endTime } = req.body;
-  console.log(req.body);
+  // conscole.log(req.body);
 
   try {
     // Validate required fields
@@ -48,11 +48,11 @@ router.post("/", async (req, res) => {
         // convert array to number
         const availableDays = car.availabilityDays.map(Number);
         const availableHours = car.availabilityHours.map(Number);
-        console.log("avail", availableDays, availableHours);
-        console.log(
-          "isCarAvailable",
-          isCarAvailable(availableDays, availableHours, searchStart, searchEnd)
-        );
+        // console.log("avail", availableDays, availableHours);
+        // console.log(
+        //   "isCarAvailable",
+        //   isCarAvailable(availableDays, availableHours, searchStart, searchEnd)
+        // );
 
         return isCarAvailable(
           availableDays,
@@ -65,7 +65,7 @@ router.post("/", async (req, res) => {
         return false;
       }
     });
-    console.log("availableCars", availableCars);
+    // console.log("availableCars", availableCars);
     res.json(availableCars);
   } catch (error) {
     console.error("Search error:", error);
@@ -76,21 +76,21 @@ router.post("/", async (req, res) => {
 function isCarAvailable(availableDays, availableHours, searchStart, searchEnd) {
   // Calculate total rental days
   const totalDays = calculateTotalDays(searchStart, searchEnd);
-  console.log("Total days needed:", totalDays, "Max allowed:", availableDays);
+  // console.log("Total days needed:", totalDays, "Max allowed:", availableDays);
 
   // Check day availability
   if (totalDays > availableDays) return false;
 
   // Calculate hours needed per day
   const hoursPerDay = getMaxHoursPerDay(searchStart, searchEnd);
-  console.log(hoursPerDay);
+  // console.log(hoursPerDay);
   const maxNeededHours = Math.min(...hoursPerDay);
-  console.log(
-    "Max hours needed:",
-    maxNeededHours,
-    "Max allowed:",
-    availableHours
-  );
+  // console.log(
+  //   "Max hours needed:",
+  //   maxNeededHours,
+  //   "Max allowed:",
+  //   availableHours
+  // );
 
   // Check hourly availability
   if (maxNeededHours > availableHours) return false;
